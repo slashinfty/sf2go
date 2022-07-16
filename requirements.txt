@@ -1,0 +1,4 @@
+stockfish==3.28
+chess=1.9.2
+rpi-lcd=0.0.3
+gpiozero=1.6.2

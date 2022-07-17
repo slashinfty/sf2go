@@ -255,7 +255,7 @@ def user_input():
     while typing:
         line = "Input: {}".format(move)
         lcd.text(line, 2) # change to last line
-        sleep(0.5)
+        sleep(0.25)
 
 # Safe Exit
 def safe_exit(signum, frame):

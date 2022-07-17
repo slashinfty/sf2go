@@ -24,6 +24,8 @@ btn09 = Button(20, bounce_time = 0.3) # O-O-O, h, 8
 btn10 = Button(21, bounce_time = 0.3, hold_time = 2) # Modifier
 
 # Global Variables
+characters = 16
+rows = 2
 board = chess.Board()
 started = False
 analyze = False
@@ -55,6 +57,7 @@ def btn01Press():
         else:
             move += "1"
             state += 1
+    lcd.text("Input: {}".format(move), rows)
 
 def btn02Press():
     global move
@@ -76,6 +79,7 @@ def btn02Press():
             state += 1
     elif state == 3:
         move += "=R"
+    lcd.text("Input: {}".format(move), rows)
 
 def btn03Press():
     global move
@@ -97,6 +101,7 @@ def btn03Press():
             state += 1
     elif state == 3:
         move += "=N"
+    lcd.text("Input: {}".format(move), rows)
 
 def btn04Press():
     global move
@@ -118,6 +123,7 @@ def btn04Press():
             state += 1
     elif state == 3:
         move += "=B"
+    lcd.text("Input: {}".format(move), rows)
 
 def btn05Press():
     global analyze
@@ -136,6 +142,7 @@ def btn05Press():
             typing = False
         move = ""
         state = 0
+    lcd.text("Input: {}".format(move), rows)
 
 def btn06Press():
     global move
@@ -157,6 +164,7 @@ def btn06Press():
             state += 1
     elif state == 3:
         move += "=Q"
+    lcd.text("Input: {}".format(move), rows)
 
 def btn07Press():
     global move
@@ -176,6 +184,7 @@ def btn07Press():
         else:
             move += "6"
             state += 1
+    lcd.text("Input: {}".format(move), rows)
 
 def btn08Press():
     global move
@@ -195,6 +204,7 @@ def btn08Press():
         else:
             move += "7"
             state += 1
+    lcd.text("Input: {}".format(move), rows)
 
 def btn09Press():
     global move
@@ -214,6 +224,7 @@ def btn09Press():
         else:
             move += "8"
             state += 1
+    lcd.text("Input: {}".format(move), rows)
 
 def btn10Held():
     global analyze
@@ -222,6 +233,7 @@ def btn10Held():
     global state
     global typing
     move = ""
+    lcd.text("Input: {}".format(move), rows)
     state = -1
     started = False
     analyze = False
@@ -229,12 +241,11 @@ def btn10Held():
 
 # Best Move Loop
 def best_move():
-    global analyze
     global depth
 
     while analyze or depth < 50:
         stockfish.set_depth(depth)
-        moves = stockfish.get_top_moves(1) # can change if more lines
+        moves = stockfish.get_top_moves(rows - 1)
         for i, m in enumerate(moves):
             move = board.san(chess.Move.from_uci(m["Move"]))
             evaluation = ""
@@ -250,12 +261,9 @@ def best_move():
 
 # User Input Loop
 def user_input():
-    global move
-
+    lcd.text("Input: {}".format(move), rows)
     while typing:
-        line = "Input: {}".format(move)
-        lcd.text(line, 2) # change to last line
-        sleep(0.25)
+        sleep(0.1)
 
 # Safe Exit
 def safe_exit(signum, frame):
@@ -299,11 +307,15 @@ def main():
         read_user_input.start()
         
         read_user_input.join()
-        if board.is_checkmate():
-            lcd.text("Checkmate", 2) # change to last line
-            pause()
-        if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
-            lcd.text("Draw", 2) # change to last line
-            pause()
+        if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
+            if board.is_checkmate():
+                lcd.text("Checkmate", rows)
+            else:
+                lcd.text("Draw", rows)
+            state = -1
+            started = False
+            analyze = False
+            typing = False
+            btn05.wait_for_press()
 
 if __name__ == '__main__': main()

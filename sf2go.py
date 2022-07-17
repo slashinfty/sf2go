@@ -285,9 +285,11 @@ def main():
             state = 0
         stockfish.set_fen_position(board.fen())
         analyze = True
-        find_best_move = Thread(target = best_move, daemon = True).start()
+        find_best_move = Thread(target = best_move, daemon = True)
+        find_best_move.start()
         typing = True
-        read_user_input = Thread(target = user_input, daemon = True).start()
+        read_user_input = Thread(target = user_input, daemon = True)
+        read_user_input.start()
         
         read_user_input.join()
         if board.is_checkmate():

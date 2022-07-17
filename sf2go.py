@@ -237,7 +237,11 @@ def best_move():
         moves = stockfish.get_top_moves(1) # can change if more lines
         for i, m in enumerate(moves):
             move = board.san(chess.Move.from_uci(m["Move"]))
-            evaluation = str(m["Centipawn"] / 100) if m["Mate"] == "None" else "#" + m["Mate"]
+            evaluation = ""
+            if m["Mate"] == "None":
+                evaluation += str(m["Centipawn"] / 100)
+            else:
+                evaluation += "#" + m["Mate"]
             line = move + " " * (16 - len(move) - len(evaluation)) + evaluation
             lcd.text(line, i + 1)
         depth += 1

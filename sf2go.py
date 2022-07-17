@@ -238,7 +238,7 @@ def best_move():
         for i, m in enumerate(moves):
             move = board.san(chess.Move.from_uci(m["Move"]))
             evaluation = ""
-            if m["Mate"] == "None":
+            if m["Mate"] is None:
                 evaluation += str(m["Centipawn"] / 100)
             else:
                 evaluation += "#" + m["Mate"]

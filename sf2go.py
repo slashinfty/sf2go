@@ -8,7 +8,7 @@ from threading import Thread
 from rpi_lcd import LCD
 from gpiozero import Button
 from stockfish import Stockfish
-from signal import signal, SIGTERM, SIGHUP, pause
+from signal import signal, SIGTERM, SIGHUP, SIGINT, pause
 
 # Components
 lcd = LCD()
@@ -239,6 +239,8 @@ def best_move():
             move = board.san(chess.Move.from_uci(m["Move"]))
             evaluation = ""
             if m["Mate"] is None:
+                if (m["Centipawn"] > 0):
+                    evaluation += "+"
                 evaluation += str(m["Centipawn"] / 100)
             else:
                 evaluation += "#" + m["Mate"]
@@ -270,6 +272,7 @@ def main():
 
     signal(SIGTERM, safe_exit)
     signal(SIGHUP, safe_exit)
+    signal(SIGINT, safe_exit)
 
     btn01.when_pressed = btn01Press
     btn02.when_pressed = btn02Press

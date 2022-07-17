@@ -236,16 +236,19 @@ def best_move():
         stockfish.set_depth(depth)
         moves = stockfish.get_top_moves(1) # can change if more lines
         for i, m in enumerate(moves):
-            # print lines
-            # if m["Mate"] == "None" (print cp)
-            # elif m["Centipawn"] == "None" (print M mate)
-            # print("move:", board.san(chess.Move.from_uci(m["Move"])), "cp:", m["Centipawn"] / 100, "depth:", d)
+            move = board.san(chess.Move.from_uci(m["Move"]))
+            evaluation = str(m["Centipawn"] / 100) if m["Mate"] == "None" else "#" + m["Mate"]
+            line = move + " " * (16 - len(move) - len(evaluation)) + evaluation
+            lcd.text(line, i + 1)
         depth += 1
 
 # User Input Loop
 def user_input():
+    global move
+
     while typing:
-        # write move
+        line = "Input: {}".format(move)
+        lcd.text(line, 2) # change to last line
         sleep(0.5)
 
 # Safe Exit
@@ -288,10 +291,10 @@ def main():
         
         read_user_input.join()
         if board.is_checkmate():
-            # print checkmate
+            lcd.text("Checkmate", 2) # change to last line
             pause()
         if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
-            # print draw
+            lcd.text("Draw", 2) # change to last line
             pause()
 
 if __name__ == '__main__': main()

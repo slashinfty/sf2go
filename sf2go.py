@@ -141,9 +141,8 @@ def btn05Press():
         if move.startswith("P"):
             move = move.lstrip("P")
         if board.parse_san(move) in board.legal_moves:
-            board.push_san(move)
-            print(board.uci(board.parse_san(move))) #debug
             stockfish.make_moves_from_current_position([board.uci(board.parse_san(move))])
+            board.push_san(move)
             analyze = False
             typing = False
         move = ""

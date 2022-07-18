@@ -299,6 +299,7 @@ def main():
             started = True
             state = 0
         stockfish.set_fen_position(board.fen())
+        print(stockfish.get_board_visual())
         analyze = True
         find_best_move = Thread(target = best_move, daemon = True)
         find_best_move.start()

@@ -4,8 +4,8 @@
 import os
 import ctypes
 import chess
+import threading
 from time import sleep
-from threading import Thread
 from rpi_lcd import LCD
 from gpiozero import Button
 from stockfish import Stockfish
@@ -17,7 +17,7 @@ btn01 = Button(5, bounce_time = 0.3)  # P, a, 1
 btn02 = Button(6, bounce_time = 0.3)  # R, b, 2
 btn03 = Button(13, bounce_time = 0.3) # N, c, 3
 btn04 = Button(19, bounce_time = 0.3) # B, d, 4
-btn05 = Button(26, bounce_time = 0.3) # Enter
+#btn05 = Button(26, bounce_time = 0.3) # Enter
 btn06 = Button(25, bounce_time = 0.3) # Q, e, 5
 btn07 = Button(12, bounce_time = 0.3) # K, f, 6
 btn08 = Button(16, bounce_time = 0.3) # O-O, g, 7
@@ -140,17 +140,13 @@ def btn05Press():
     elif state == 3:
         if move.startswith("P"):
             move = move.lstrip("P")
-        print(board.parse_san(move)) #debug
-        print(board.legal_moves) #debug
-        if board.parse_san(move) in board.legal_moves == True:
-            print("legal move") #debug
+        if board.parse_san(move) in board.legal_moves:
             board.push_san(move)
             analyze = False
             typing = False
         move = ""
         state = 0
     lcd.text("Input: {}".format(move), rows)
-    print("move complete") #debug
 
 def btn06Press():
     global move
@@ -248,9 +244,9 @@ def btn10Held():
     typing = False
 
 # Best Move Loop
-class best_move_thread(Thread):
+class best_move_thread(threading.Thread):
     def __init__(self):
-        Thread.__init__(self)
+        threading.Thread.__init__(self)
 
     def run(self):
         global depth

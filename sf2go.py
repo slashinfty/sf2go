@@ -141,12 +141,14 @@ def btn05Press():
         if move.startswith("P"):
             move = move.lstrip("P")
         if board.parse_san(move) in board.legal_moves == True:
+            print("legal move") #debug
             board.push_san(move)
             analyze = False
             typing = False
         move = ""
         state = 0
     lcd.text("Input: {}".format(move), rows)
+    print("move complete") #debug
 
 def btn06Press():
     global move
@@ -329,9 +331,13 @@ def main():
         while True:
             if typing == False:
                 break
+        print("typing loop complete")#debug
         if best_move.is_alive():
+            print("raising exception") #debug
             best_move.cease()
+            print("exception raised") #debug
         best_move.join()
+        print("best_move joined") #debug
         if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
             if board.is_checkmate():
                 lcd.text("Checkmate", rows)

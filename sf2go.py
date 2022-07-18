@@ -141,7 +141,6 @@ def btn05Press():
         if move.startswith("P"):
             move = move.lstrip("P")
         if board.parse_san(move) in board.legal_moves:
-            stockfish.make_moves_from_current_position([board.uci(board.parse_san(move))])
             board.push_san(move)
             analyze = False
             typing = False
@@ -336,6 +335,7 @@ def main():
             print("exception raised") #debug
         best_move.join()
         print("best_move joined") #debug
+        stockfish.set_fen_position(board.fen())
         if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
             if board.is_checkmate():
                 lcd.text("Checkmate", rows)

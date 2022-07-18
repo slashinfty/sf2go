@@ -2,6 +2,7 @@
 
 # Imports
 import os
+import ctypes
 import chess
 from time import sleep
 from threading import Thread
@@ -33,7 +34,7 @@ board = chess.Board()
 started = False
 analyze = False
 typing = False
-depth = 10
+depth = 15
 move = ""
 state = -1
 
@@ -243,28 +244,51 @@ def btn10Held():
     typing = False
 
 # Best Move Loop
-def best_move():
-    global depth
+class best_move_thread(Thread):
+    def __init__(self):
+        Thread.__init__(self)
 
-    while analyze and depth < depthLimit:
-        stockfish.set_depth(depth)
-        moves = stockfish.get_top_moves(rows - 1)
-        for i, m in enumerate(moves):
-            move = board.san(chess.Move.from_uci(m["Move"]))
-            evaluation = ""
-            if m["Mate"] is None:
-                if (m["Centipawn"] > 0):
-                    evaluation += "+"
-                evaluation += str(m["Centipawn"] / 100)
-            else:
-                evaluation += "#" + m["Mate"]
-            line = move + " " * (16 - len(move) - len(evaluation)) + evaluation
-            lcd.text(line, i + 1)
-        depth += 1
+    def run(self):
+        global depth
+
+        try:
+            while analyze and depth < depthLimit:
+                stockfish.set_depth(depth)
+                moves = stockfish.get_top_moves(rows - 1)
+                for i, m in enumerate(moves):
+                    move = board.san(chess.Move.from_uci(m["Move"]))
+                    evaluation = ""
+                    if m["Mate"] is None:
+                        if (m["Centipawn"] > 0):
+                            evaluation += "+"
+                        evaluation += str(m["Centipawn"] / 100)
+                    else:
+                        evaluation += "#" + m["Mate"]
+                    line = move + " " * (16 - len(move) - len(evaluation)) + evaluation
+                    lcd.text(line, i + 1)
+                depth += 1
+
+        finally:
+            depth = 15
+
+    def get_id(self):
+        if hasattr(self, '_thread_id'):
+            return self._thread_id
+        for id, thread in threading._active.items():
+            if thread is self:
+                return id
+
+    def cease(self):
+        thread_id = self.get_id()
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id,
+              ctypes.py_object(SystemExit))
+        if res > 1:
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
 
 # Safe Exit
 def safe_exit(signum, frame):
     lcd.clear()
+    stockfish.send_quit_command()
     exit(1)
 
 # Main Function
@@ -298,13 +322,16 @@ def main():
         stockfish.set_fen_position(board.fen())
         print(stockfish.get_board_visual()) # debugging
         analyze = True
-        find_best_move = Thread(target = best_move)
-        find_best_move.start()
+        best_move = best_move_thread()
+        best_move.start()
         typing = True
         lcd.text("Input: {}".format(move), rows)
         while True:
             if typing == False:
                 break
+        if best_move.is_alive():
+            best_move.cease()
+        best_move.join()
         if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
             if board.is_checkmate():
                 lcd.text("Checkmate", rows)

@@ -334,6 +334,8 @@ def main():
             best_move.cease()
             print("exception raised") #debug
         best_move.join()
+        for row in range(1, rows):
+            lcd.text("", row)
         print("best_move joined") #debug
         stockfish.set_fen_position(board.fen())
         if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():

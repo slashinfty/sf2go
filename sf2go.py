@@ -23,9 +23,12 @@ btn08 = Button(16, bounce_time = 0.3) # O-O, g, 7
 btn09 = Button(20, bounce_time = 0.3) # O-O-O, h, 8
 btn10 = Button(21, bounce_time = 0.3, hold_time = 2) # Modifier
 
-# Global Variables
+# Customizable Constants
 characters = 16
 rows = 2
+depthLimit = 50
+
+# Global Variables
 board = chess.Board()
 started = False
 analyze = False
@@ -243,7 +246,7 @@ def btn10Held():
 def best_move():
     global depth
 
-    while analyze or depth < 50:
+    while analyze and depth < depthLimit:
         stockfish.set_depth(depth)
         moves = stockfish.get_top_moves(rows - 1)
         for i, m in enumerate(moves):
@@ -258,12 +261,6 @@ def best_move():
             line = move + " " * (16 - len(move) - len(evaluation)) + evaluation
             lcd.text(line, i + 1)
         depth += 1
-
-# User Input Loop
-def user_input():
-    lcd.text("Input: {}".format(move), rows)
-    while typing:
-        sleep(0.1)
 
 # Safe Exit
 def safe_exit(signum, frame):
@@ -299,15 +296,15 @@ def main():
             started = True
             state = 0
         stockfish.set_fen_position(board.fen())
-        print(stockfish.get_board_visual())
+        print(stockfish.get_board_visual()) # debugging
         analyze = True
-        find_best_move = Thread(target = best_move, daemon = True)
+        find_best_move = Thread(target = best_move)
         find_best_move.start()
         typing = True
-        read_user_input = Thread(target = user_input, daemon = True)
-        read_user_input.start()
-        
-        read_user_input.join()
+        lcd.text("Input: {}".format(move), rows)
+        while True:
+            if typing == False:
+                break
         if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_repetition():
             if board.is_checkmate():
                 lcd.text("Checkmate", rows)

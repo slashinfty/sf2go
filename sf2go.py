@@ -134,7 +134,7 @@ def btn05Press():
         move = ""
         state = 0
     elif state == 3:
-        if move.startsWith("P"):
+        if move.startswith("P"):
             move = move.lstrip("P")
         if board.parse_san(move) in board.legal_moves == True:
             board.push_san(move)

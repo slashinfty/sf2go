@@ -142,6 +142,7 @@ def btn05Press():
             move = move.lstrip("P")
         if board.parse_san(move) in board.legal_moves:
             board.push_san(move)
+            stockfish.make_moves_from_current_position([board.uci(board.parse_san(move))])
             analyze = False
             typing = False
         move = ""
@@ -317,9 +318,9 @@ def main():
     while True:
         if started == False:
             board = chess.Board()
+            stockfish.set_fen_position(board.fen())
             started = True
             state = 0
-        stockfish.set_fen_position(board.fen())
         print(stockfish.get_board_visual()) # debugging
         analyze = True
         best_move = best_move_thread()
@@ -327,7 +328,7 @@ def main():
         typing = True
         lcd.text("Input: {}".format(move), rows)
         while typing:
-            sleep(0.1)
+            continue
         print("typing loop complete")#debug
         if best_move.is_alive():
             print("raising exception") #debug

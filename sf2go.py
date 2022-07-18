@@ -21,7 +21,7 @@ btn06 = Button(25, bounce_time = 0.3) # Q, e, 5
 btn07 = Button(12, bounce_time = 0.3) # K, f, 6
 btn08 = Button(16, bounce_time = 0.3) # O-O, g, 7
 btn09 = Button(20, bounce_time = 0.3) # O-O-O, h, 8
-btn10 = Button(21, bounce_time = 0.3, hold_time = 2) # Modifier
+btn10 = Button(21, bounce_time = 0.3, hold_time = 3) # Modifier
 
 # Customizable Constants
 characters = 16

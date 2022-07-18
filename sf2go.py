@@ -140,6 +140,8 @@ def btn05Press():
     elif state == 3:
         if move.startswith("P"):
             move = move.lstrip("P")
+        print(board.parse_san(move)) #debug
+        print(board.legal_moves) #debug
         if board.parse_san(move) in board.legal_moves == True:
             print("legal move") #debug
             board.push_san(move)
@@ -328,9 +330,8 @@ def main():
         best_move.start()
         typing = True
         lcd.text("Input: {}".format(move), rows)
-        while True:
-            if typing == False:
-                break
+        while typing:
+            sleep(0.1)
         print("typing loop complete")#debug
         if best_move.is_alive():
             print("raising exception") #debug

@@ -17,7 +17,7 @@ btn01 = Button(5, bounce_time = 0.3)  # P, a, 1
 btn02 = Button(6, bounce_time = 0.3)  # R, b, 2
 btn03 = Button(13, bounce_time = 0.3) # N, c, 3
 btn04 = Button(19, bounce_time = 0.3) # B, d, 4
-#btn05 = Button(26, bounce_time = 0.3) # Enter
+btn05 = Button(26, bounce_time = 0.3) # Enter
 btn06 = Button(25, bounce_time = 0.3) # Q, e, 5
 btn07 = Button(12, bounce_time = 0.3) # K, f, 6
 btn08 = Button(16, bounce_time = 0.3) # O-O, g, 7
